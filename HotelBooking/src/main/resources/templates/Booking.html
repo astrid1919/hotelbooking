@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Hotel</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+		crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
+		integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
+		crossorigin="anonymous"></script>
+	<style>
+		@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@800&family=Poppins&display=swap');
+
+		body {
+			background-color: #eee;
+		}
+
+		* {
+			padding: 0;
+			margin: 0;
+			box-sizing: border-box;
+			font-family: 'Poppins', sans-serif
+		}
+
+		.container {
+			position: relative;
+			min-height: 800px;
+			overflow-y: auto
+		}
+
+		.container::-webkit-scrollbar {
+			width: 6px;
+			border-radius: 3px
+		}
+
+		.container::-webkit-scrollbar-thumb {
+			background-color: #ffa500;
+			border-radius: 3px
+		}
+
+		.container.bg-sec-light {
+			background-color: #e7e7e7
+		}
+
+		#navbar-toggler-icon {
+			left: 7%;
+			height: 40px;
+			width: 40px;
+			text-align: center;
+			background: #1b1b1b;
+			border-radius: 3px;
+			cursor: pointer;
+			z-index: 5;
+			transition: left 0.4s ease
+		}
+
+		#navbar-toggler-icon.click {
+			position: absolute;
+			left: 210px;
+			top: 0;
+			background-color: #747474
+		}
+
+		#navbar-toggler-icon.click span:before {
+			content: '\f00d'
+		}
+
+		.sidebar {
+			position: absolute;
+			width: 220px;
+			height: 100%;
+			background-color: #161616;
+			color: #fff;
+			transform: translateX(-100%) scale(0);
+			left: 0;
+			transition: transform .2s ease-in-out
+		}
+
+		.sidebar.show {
+			transform: translateX(0%) scale(1)
+		}
+
+		#side-nav {
+			float: left;
+			width: 18%
+		}
+
+		#content {
+			float: right;
+			width: 82%
+		}
+
+		a {
+			text-decoration: none;
+			color: #222
+		}
+
+		#content .user-select-none {
+			user-select: none
+		}
+
+		nav ul .brand img {
+			object-fit: contain;
+			width: 100px;
+			height: 70px
+		}
+
+		nav ul {
+			height: 100%;
+			width: 100%;
+			list-style: none;
+			padding: 0;
+			margin-bottom: 0
+		}
+
+		nav ul li {
+			line-height: 50px
+		}
+
+		nav ul li a {
+			color: #e5e5e5;
+			text-decoration: none;
+			display: block;
+			width: 100%;
+			padding-left: 20px;
+			border-left: 4px solid transparent
+		}
+
+		nav ul li a:hover {
+			color: #fff;
+			background-color: #2e2e2e
+		}
+
+		nav ul li.active a {
+			color: #ffff;
+			background-color: #747474;
+			border-left: 4px solid #ffa500
+		}
+
+		.fa-phone {
+			transform: rotate(90deg)
+		}
+
+		.location input[type="text"] {
+			max-width: 200px;
+			border-radius: 0px;
+			border: 1px solid #444
+		}
+
+		.location input[type="text"]::placeholder {
+			color: #444
+		}
+
+		.location input[type="text"]:focus,
+		input[type="submit"]:focus {
+			box-shadow: none
+		}
+
+		input[type="submit"] {
+			border-radius: 0;
+			width: 120px
+		}
+
+		.box {
+			padding: 10px
+		}
+
+		.btn:focus {
+			box-shadow: none
+		}
+
+		.box-label {
+			color: #11698e;
+			font-size: 0.9rem;
+			font-weight: 800
+		}
+
+		.box-label .btn {
+			padding: 0;
+			font-size: 0.8rem
+		}
+
+		label {
+			cursor: pointer
+		}
+
+		.tick {
+			display: block;
+			position: relative;
+			padding-left: 23px;
+			cursor: pointer;
+			font-size: 0.9rem;
+			margin: 0
+		}
+
+		.tick input {
+			position: absolute;
+			opacity: 0;
+			cursor: pointer;
+			height: 0;
+			width: 0
+		}
+
+		.check {
+			position: absolute;
+			top: 1px;
+			left: 0;
+			height: 18px;
+			width: 18px;
+			background-color: #fff;
+			border: 1px solid #ddd;
+			border-radius: 3px
+		}
+
+		.tick:hover input~.check {
+			background-color: #f3f3f3
+		}
+
+		.tick input:checked~.check {
+			background-color: #ffffff
+		}
+
+		.check:after {
+			content: "";
+			position: absolute;
+			display: none
+		}
+
+		.tick input:checked~.check:after {
+			display: block;
+			transform: rotate(45deg) scale(1)
+		}
+
+		.tick .check:after {
+			left: 6px;
+			top: 2px;
+			width: 5px;
+			height: 10px;
+			border: solid rgb(0, 0, 0);
+			border-width: 0 3px 3px 0;
+			transform: rotate(45deg) scale(2)
+		}
+
+		.hotel .hotel-img {
+			width: 200px;
+			object-fit: contain
+		}
+
+		.hotel .name {
+			font-size: 1.2rem;
+			font-weight: 700
+		}
+
+		.hotel .name .city {
+			font-weight: normal;
+			font-size: 0.85rem
+		}
+
+		#filter {
+			width: 200px
+		}
+
+		.hotel .fas,
+		.hotel .far {
+			font-size: .8rem
+		}
+
+		.hotel .fas.fa-star {
+			color: #ffa500
+		}
+
+		.hotel .tags {
+			font-size: 0.8rem
+		}
+
+		.hotel .btn {
+			width: 150px;
+			border-radius: 0
+		}
+
+		.hotel .btn.enquiry {
+			background-color: #ff761b;
+			color: #fff
+		}
+
+		.hotel .btn.enquiry:hover {
+			background-color: #fc771fef
+		}
+
+		#hotels {
+			width: 100%
+		}
+
+		@media(min-width: 1399.6px) {
+			#navbar-toggler-icon {
+				display: none
+			}
+		}
+
+		@media(max-width: 1399.5px) {
+			#navbar-toggler-icon {
+				display: block;
+				z-index: 11
+			}
+
+			#side-nav {
+				float: none;
+				width: 250px;
+				background-color: #161616f5;
+				z-index: 10
+			}
+
+			#content {
+				float: none;
+				width: 100%
+			}
+		}
+
+		@media(max-width: 1199.5px) {
+			.hotel .hotel-img {
+				width: 170px
+			}
+
+			#side-nav {
+				height: initial
+			}
+		}
+
+		@media(max-width: 767.5px) {
+			.hotel .city {
+				display: block
+			}
+
+			.hotel .btn {
+				width: 120px;
+				font-size: 0.85rem
+			}
+
+			input[type="submit"] {
+				width: 100px;
+				font-size: 0.9rem;
+				margin-right: 10px
+			}
+		}
+
+		@media(max-width: 575.5px) {
+
+			#filter,
+			#hotels {
+				width: 95%;
+				margin: 15px
+			}
+		}
+
+		@media(max-width: 410px) {
+
+			#filter,
+			#hotels {
+				width: 93%;
+				margin: 10px
+			}
+		}
+	</style>
+</head>
+
+<body>
+	<div>
+		<div class="container my-sm-5 border p-0 bg-sec-light">
+			<div id="content">
+				<div class="bg-light p-2 px-md-4 px-3 shadow-sm">
+					<div class="d-flex align-items-center">
+						<div class="user-select-none">Home</div>
+						<div class="fas fa-angle-right px-2"></div>
+						<div id="navigator" class="text-primary"></div>
+					</div>
+				</div>
+				<form>
+				<div class="d-sm-flex align-items-sm-center py-sm-3 px-md-3 location"> 
+					<input  type="date"  placeholder="Check in" class="mx-sm-2 mx-3 my-sm-0 my-2 form-control" required> 
+					<input  type="date"  placeholder="Check out" class=" mx-md-2 mx-sm-1 mx-3 my-sm-0 my-2 form-control" required>  
+					<input type="submit" value="Search" class="btn btn-primary mx-3 my-sm-0 mb-2"> 
+				</div>
+				
+					
+				<div class="d-sm-flex">
+					<div class="me-sm-2">
+						<div id="filter" class="p-2 bg-light ms-md-4 ms-sm-2 border">
+							<div class="border-bottom h5 text-uppercase">Filter By</div>
+							<div class="box border-bottom">
+								<div class="box-label text-uppercase d-flex align-items-center">Room Type <button
+										class="btn ms-auto" type="button" data-bs-toggle="collapse"
+										data-bs-target="#inner-box" aria-expanded="false" aria-controls="inner-box">
+										<span class="fas fa-plus"></span>
+									</button> </div>
+								<div id="inner-box" class="collapse show">
+									<div class="my-1"> <label class="tick">Single <input  th:value="single" type="checkbox"
+												checked="checked"> <span class="check"></span> </label> </div>
+									<div class="my-1"> <label class="tick">Double <input th:value="double" type="checkbox"> <span
+												class="check"></span> </label> </div>
+									<div class="my-1"> <label class="tick">Twin <input th:value="twin" type="checkbox"> <span
+												class="check"></span> </label> </div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="bg-white p-2 border" id="rooms" th:each="r : ${roomList}">
+						<div class="hotel py-2 px-2 pb-4 border-bottom">
+							<div class="row">
+								<div class="col-lg-3"> <img
+										src="${r.id}.img"
+										alt="" class="hotel-img"> </div>
+								<div class="col-lg-9">
+									<div class="d-md-flex align-items-md-center">
+										<div class="name" th:text="${r.type}" th:value="${r.type}">  </div>
+										<div class="price" th:text="${r.price}" th:value="${r.price}"></div>
+									</div>
+									<div class="rating"> <span class="fas fa-star"></span> <span
+											class="fas fa-star"></span>
+										<span class="fas fa-star"></span> <span class="fas fa-star"></span> <span
+											class="far fa-star"></span> <!-- Book now Enquiry -->
+									</div>
+									<div class="d-flex flex-column tags pt-1">
+										<div><span class="fas fa-comment-dollar"></span> Fee Canellation</div>
+										<div><span class="fas fa-receipt"></span> Express check-in</div>
+										<div><span class="fas fa-concierge-bell"></span> Concierge</div>
+									</div>
+								</div>
+							</div>
+							<div class="d-flex justify-content-end mt-1">
+								<input th:value="${r.id}" type ="submit" class="btn btn-primary text-uppercase" value="Book Now">
+							</div>
+						</div>
+					</div>
+				</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+</body>
+
+</html>
